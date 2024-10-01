@@ -1,17 +1,25 @@
 package main
 
-import ("net/http"
-		"proxyserver/proxy"
-		"fmt"
-	)
+import (
+	"fmt"
+	"net/http"
+	"proxyserver/proxy"
+
+	"github.com/go-redis/redis/v8"
+)
 
 
 func main(){
 
-	 http.HandleFunc("/", proxy.Handlerequest)
+	rdb:=redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", 
+		DB:       0,  
+	})
+	 http.HandleFunc("/", proxy.HandleRequest(rdb))
 	 fmt.Println("starting proxy server")
 	 if err:=http.ListenAndServe(":8080", nil) ;err!= nil {
-		
+
 		 fmt.Println(err)
 		 panic(err)
 
